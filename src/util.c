@@ -1,8 +1,14 @@
 #include "util.h"
 #include <sys/ptrace.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 ssize_t ptrace_read(pid_t pid, void *addr, uint8_t buf[], size_t count) {
+  if (count % WORD_SIZE != 0) {
+    fprintf(stderr, "Count [%ld] must be a multiple of word size!", count);
+    exit(1);
+  }
   size_t i;
   word_t word;
   for (i = 0; i < count; i += WORD_SIZE) {
@@ -13,6 +19,10 @@ ssize_t ptrace_read(pid_t pid, void *addr, uint8_t buf[], size_t count) {
 }
 
 ssize_t ptrace_write(pid_t pid, void *addr, uint8_t buf[], size_t count) {
+  if (count % WORD_SIZE != 0) {
+    fprintf(stderr, "Count [%ld] must be a multiple of word size!", count);
+    exit(1);
+  }
   size_t i;
   word_t word;
   for (i = 0; i < count; i += WORD_SIZE) {

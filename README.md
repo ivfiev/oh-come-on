@@ -1,7 +1,9 @@
 # oh-come-on
-Simple ptrace-based golang `compile` process wrapper removing annoying `declared and not used` errors.
+Simple ptrace-based golang `compile` process wrapper removing the annoying `declared and not used` errors at runtime.
 
-Tested on x86 Arch Linux kernel 6.13.6, go version 1.24.1. Other versions are currently unlikely to work.
+Does not touch disk nor modifies go sources. No rebuild of go compiler required.
+
+Tested with [go 1.24.1](https://archlinux.org/packages/extra/x86_64/go/). Other versions are currently unlikely to work.
 
 ## build
 `make`

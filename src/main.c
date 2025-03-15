@@ -43,16 +43,16 @@ void handle_syscall(pid_t pid) {
 void trace_tree(pid_t root) {
   int status;
   for (;;) {
-    pid_t child = waitpid(-1, &status, 0);
+    pid_t pid = waitpid(-1, &status, 0);
     if (WIFEXITED(status)) {
-      if (child == root) {
+      if (pid == root) {
         break;
       } else {
         continue;
       }
     }
-    handle_syscall(child);
-    ptrace(PTRACE_SYSCALL, child, 0, 0);
+    handle_syscall(pid);
+    ptrace(PTRACE_SYSCALL, pid, 0, 0);
   }
 }
 
