@@ -26,15 +26,15 @@ void handle_syscall(pid_t pid) {
     } else {
       // exiting execve
       if (strstr(proc->filename, "compile")) {
-        uint8_t bytes[8];
-        void *addr = (void *)0xcd3f19;
-        ptrace_read(pid, addr, bytes, 8);
+        uint8_t bytes[WORD_SIZE];
+        void *softerrorf_call_addr = (void *)0xcd3f19;
+        ptrace_read(pid, softerrorf_call_addr, bytes, sizeof(bytes));
         bytes[0] = 0x90;
         bytes[1] = 0x90;
         bytes[2] = 0x90;
         bytes[3] = 0x90;
         bytes[4] = 0x90;
-        ptrace_write(pid, addr, bytes, 8);
+        ptrace_write(pid, softerrorf_call_addr, bytes, sizeof(bytes));
       }
     }
   }
