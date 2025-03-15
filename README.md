@@ -1,5 +1,5 @@
 # oh-come-on
-Simple ptrace-based golang `compile` process wrapper removing the annoying `declared and not used` errors at runtime.
+Simple ptrace-based golang `compile` process wrapper removing the annoying `declared and not used` errors.
 
 Does not touch disk nor modifies go sources. No rebuild of go compiler required.
 
