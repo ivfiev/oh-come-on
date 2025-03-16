@@ -1,12 +1,12 @@
 # oh-come-on
-Simple ptrace-based golang `compile` process wrapper removing the annoying `declared and not used` errors.
+Simple ptrace-based golang `compile` process tracer disabling the annoying `declared and not used` and `imported and not used` errors.
 
 Does not touch disk nor modifies go sources. No rebuild of go compiler required.
 
-Tested with [go 1.24.1](https://archlinux.org/packages/extra/x86_64/go/). Other versions are currently unlikely to work.
+Tested with [go 1.24.1](https://archlinux.org/packages/extra/x86_64/go/).
 
 ## build
 `make`
 
-## example
-![image](https://github.com/user-attachments/assets/248d927f-099c-4235-b266-d9de447be651)
+## sample usage
+![image](https://github.com/user-attachments/assets/d089a972-c585-4cfc-af4d-9c03337cb8e2)
