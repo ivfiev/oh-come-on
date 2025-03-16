@@ -9,7 +9,8 @@
 typedef union {
   uint8_t bytes[WORD_SIZE];
   char str[WORD_SIZE];
-  long w;
+  long qw;
+  uint32_t dw;
 } word_t;
 
 ssize_t ptrace_read(pid_t pid, void *addr, uint8_t buf[], size_t count);

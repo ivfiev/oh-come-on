@@ -9,6 +9,7 @@
 #include <string.h>
 #include "util.h"
 #include "proc.h"
+#include "patch.h"
 
 void nop_call(pid_t pid, void *call_addr) {
   uint8_t bytes[WORD_SIZE];
@@ -21,7 +22,7 @@ void nop_call(pid_t pid, void *call_addr) {
   bytes[2] = 0x90;
   bytes[3] = 0x90;
   bytes[4] = 0x90;
-  if(ptrace_write(pid, call_addr, bytes, sizeof(bytes)) < WORD_SIZE) {
+  if (ptrace_write(pid, call_addr, bytes, sizeof(bytes)) < WORD_SIZE) {
     fprintf(stderr, "Failed to overwrite the call.");
     exit(1);
   }
@@ -43,9 +44,9 @@ void handle_syscall(pid_t pid) {
     } else {
       // exiting execve
       if (strstr(proc->filename, "compile")) {
-        nop_call(pid, (void *)0xcd3f19); // delared and not used
-        nop_call(pid, (void *)0xccd207); // imported and not used
-        nop_call(pid, (void *)0xccd176); // imported as %q and not used
+        nop_softerrorf(pid, "declared and not used: \%s");
+        nop_softerrorf(pid, "\%q imported and not used");
+        nop_softerrorf(pid, "\%q imported as \%s and not used");
       }
     }
   }
@@ -68,7 +69,7 @@ void trace_tree(pid_t root) {
 }
 
 int main(int argc, char **argv) {
-  if (argc < 2 || strcmp(argv[1], "go")) {
+  if (argc < 2 || (strcmp(argv[1], "go") && strcmp(argv[1], "./go"))) {
     fprintf(stderr, "Usage: %s go build|run xyz.go\n", argv[0]);
     return 1;
   }
