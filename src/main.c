@@ -10,13 +10,30 @@
 #include "util.h"
 #include "proc.h"
 
+void nop_call(pid_t pid, void *call_addr) {
+  uint8_t bytes[WORD_SIZE];
+  if (ptrace_read(pid, call_addr, bytes, sizeof(bytes)) < WORD_SIZE) {
+    fprintf(stderr, "Failed to read the call.");
+    exit(1);
+  }
+  bytes[0] = 0x90;
+  bytes[1] = 0x90;
+  bytes[2] = 0x90;
+  bytes[3] = 0x90;
+  bytes[4] = 0x90;
+  if(ptrace_write(pid, call_addr, bytes, sizeof(bytes)) < WORD_SIZE) {
+    fprintf(stderr, "Failed to overwrite the call.");
+    exit(1);
+  }
+}
+
 void handle_syscall(pid_t pid) {
   struct user_regs_struct regs;
   ptrace(PTRACE_GETREGS, pid, 0, &regs);
   proc_t *proc = proc_get(pid);
   if (regs.orig_rax == 59) {
     // execve(2)
-    if (regs.rax == -ENOSYS) {
+    if (regs.rax == -ENOSYS && proc == NULL) {
       // entering execve
       void *str = (void *)regs.rdi;
       char filename[1024];
@@ -26,15 +43,9 @@ void handle_syscall(pid_t pid) {
     } else {
       // exiting execve
       if (strstr(proc->filename, "compile")) {
-        uint8_t bytes[WORD_SIZE];
-        void *softerrorf_call_addr = (void *)0xcd3f19;
-        ptrace_read(pid, softerrorf_call_addr, bytes, sizeof(bytes));
-        bytes[0] = 0x90;
-        bytes[1] = 0x90;
-        bytes[2] = 0x90;
-        bytes[3] = 0x90;
-        bytes[4] = 0x90;
-        ptrace_write(pid, softerrorf_call_addr, bytes, sizeof(bytes));
+        nop_call(pid, (void *)0xcd3f19); // delared and not used
+        nop_call(pid, (void *)0xccd207); // imported and not used
+        nop_call(pid, (void *)0xccd176); // imported as %q and not used
       }
     }
   }
@@ -57,7 +68,7 @@ void trace_tree(pid_t root) {
 }
 
 int main(int argc, char **argv) {
-  if (argc < 2) {
+  if (argc < 2 || strcmp(argv[1], "go")) {
     fprintf(stderr, "Usage: %s go build|run xyz.go\n", argv[0]);
     return 1;
   }
