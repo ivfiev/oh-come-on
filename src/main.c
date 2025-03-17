@@ -14,9 +14,9 @@
 void handle_syscall(pid_t pid) {
   struct user_regs_struct regs;
   ptrace(PTRACE_GETREGS, pid, 0, &regs);
-  proc_t *proc = proc_get(pid);
   if (regs.orig_rax == 59) {
     // execve(2)
+    proc_t *proc = proc_get(pid);
     if (regs.rax == -ENOSYS && proc == NULL) {
       // entering execve
       void *str = (void *)regs.rdi;
@@ -52,7 +52,7 @@ void trace_tree(pid_t root) {
 
 int main(int argc, char **argv) {
   if (argc < 2 || (strcmp(argv[1], "go") && strcmp(argv[1], "./go"))) {
-    fprintf(stderr, "Usage: %s go build|run xyz.go\n", argv[0]);
+    fprintf(stderr, "usage: %s go build|run xyz.go\n", argv[0]);
     return 1;
   }
   pid_t child = fork();

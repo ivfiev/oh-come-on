@@ -27,8 +27,7 @@ static uint32_t find_str(char *str) {
       return BASE_ADDR + i;
     }
   }
-  fprintf(stderr, "Failed to find the string [%s]\n", str);
-  exit(1);
+  ERROR("failed to find the string");
 }
 
 static uint32_t find_lea(uint32_t addr) {
@@ -42,26 +41,24 @@ static uint32_t find_lea(uint32_t addr) {
       }
     }
   }
-  fprintf(stderr, "Failed to find LEA\n");
-  exit(1);
+  ERROR("failed to find LEA");
 }
 
 static uint32_t find_call(uint32_t lea) {
+  const int call_range = 30;
   lea -= BASE_ADDR;
-  for (int i = 0; i < 30; i++) {
+  for (int i = 0; i < call_range; i++) {
     if (COMPILER_VM[lea + i] == 0xe8) {
       return BASE_ADDR + lea + i;
     }
   }
-  fprintf(stderr, "Failed to find CALL\n");
-  exit(1);
+  ERROR("failed to find CALL");
 }
 
 static void nop_call(pid_t pid, uint32_t call_addr) {
   uint8_t bytes[WORD_SIZE];
   if (ptrace_read(pid, (void *)(uint64_t)call_addr, bytes, sizeof(bytes)) < WORD_SIZE) {
-    fprintf(stderr, "Failed to read the call.");
-    exit(1);
+    ERROR("failed to read the call");
   }
   bytes[0] = 0x90;
   bytes[1] = 0x90;
@@ -69,8 +66,7 @@ static void nop_call(pid_t pid, uint32_t call_addr) {
   bytes[3] = 0x90;
   bytes[4] = 0x90;
   if (ptrace_write(pid, (void *)(uint64_t)call_addr, bytes, sizeof(bytes)) < WORD_SIZE) {
-    fprintf(stderr, "Failed to overwrite the call.");
-    exit(1);
+    ERROR("failed to overwrite the call");
   }
 }
 

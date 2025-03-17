@@ -6,6 +6,10 @@
 
 #define WORD_SIZE (sizeof(long))
 
+#define ERROR(msg) \
+  fprintf(stderr, "%s:%d: %s\n", __FILE__, __LINE__, msg); \
+  exit(1)
+
 typedef union {
   uint8_t bytes[WORD_SIZE];
   char str[WORD_SIZE];
