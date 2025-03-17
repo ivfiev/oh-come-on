@@ -11,23 +11,6 @@
 #include "proc.h"
 #include "patch.h"
 
-void nop_call(pid_t pid, void *call_addr) {
-  uint8_t bytes[WORD_SIZE];
-  if (ptrace_read(pid, call_addr, bytes, sizeof(bytes)) < WORD_SIZE) {
-    fprintf(stderr, "Failed to read the call.");
-    exit(1);
-  }
-  bytes[0] = 0x90;
-  bytes[1] = 0x90;
-  bytes[2] = 0x90;
-  bytes[3] = 0x90;
-  bytes[4] = 0x90;
-  if (ptrace_write(pid, call_addr, bytes, sizeof(bytes)) < WORD_SIZE) {
-    fprintf(stderr, "Failed to overwrite the call.");
-    exit(1);
-  }
-}
-
 void handle_syscall(pid_t pid) {
   struct user_regs_struct regs;
   ptrace(PTRACE_GETREGS, pid, 0, &regs);
@@ -59,12 +42,11 @@ void trace_tree(pid_t root) {
     if (WIFEXITED(status)) {
       if (pid == root) {
         break;
-      } else {
-        continue;
       }
+    } else {
+      handle_syscall(pid);
+      ptrace(PTRACE_SYSCALL, pid, 0, 0);
     }
-    handle_syscall(pid);
-    ptrace(PTRACE_SYSCALL, pid, 0, 0);
   }
 }
 
