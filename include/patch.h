@@ -5,6 +5,6 @@
 #include <stddef.h>
 #include <sys/types.h>
 
-int nop_softerrorf(pid_t pid, char *msg);
+void nop_softerrorf(pid_t pid, char *msg);
 
 #endif

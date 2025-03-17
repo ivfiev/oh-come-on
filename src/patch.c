@@ -70,20 +70,18 @@ static void nop_call(pid_t pid, uint32_t call_addr) {
   }
 }
 
-int nop_softerrorf(pid_t pid, char *msg) {
+void nop_softerrorf(pid_t pid, char *msg) {
   if (CACHE == NULL) {
     load_vm(pid);
     CACHE = hash_new(32, hash_str, hash_cmp_str);
   }
   kv cached_addr = hash_getv(CACHE, KV(.str = msg));
   if (cached_addr.int32 != 0) {
-    nop_call(pid, cached_addr.int32);
-    return 0;
+    return nop_call(pid, cached_addr.int32);
   }
   uint32_t msg_addr = find_str(msg);
   uint32_t lea_addr = find_lea(msg_addr);
   uint32_t call_addr = find_call(lea_addr);
   nop_call(pid, call_addr);
   hash_set(CACHE, KV(.str = msg), KV(.int32 = call_addr));
-  return 0;
 }
