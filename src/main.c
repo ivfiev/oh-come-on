@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/user.h>
+#include <sys/utsname.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
@@ -45,12 +46,16 @@ void trace_tree(pid_t root) {
       }
     } else {
       handle_syscall(pid);
-      ptrace(PTRACE_SYSCALL, pid, 0, 0);
+      ptrace(PTRACE_SYSCALL, pid, 0, 0); // 0xCC
     }
   }
 }
 
 int main(int argc, char **argv) {
+  struct utsname u;
+  if (uname(&u) || strcmp(u.sysname, "Linux") || strcmp(u.machine, "x86_64")) {
+    FATAL("only x86_64 Linux is supported");
+  }
   if (argc < 2 || (strcmp(argv[1], "go") && strcmp(argv[1], "./go"))) {
     fprintf(stderr, "usage: %s go build|run xyz.go\n", argv[0]);
     return 1;

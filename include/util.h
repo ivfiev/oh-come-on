@@ -6,7 +6,7 @@
 
 #define WORD_SIZE (sizeof(long))
 
-#define ERROR(msg) \
+#define FATAL(msg) \
   fprintf(stderr, "%s:%d: %s\n", __FILE__, __LINE__, msg); \
   exit(1)
 
