@@ -3,8 +3,11 @@ Simple ptrace-based golang `compile` process tracer disabling the annoying `decl
 
 Does not touch disk nor modifies go sources. No rebuild of go compiler required.
 
+Tested on `go` versions 1.21-1.26.
+
 ## build
 `make`
 
 ## sample usage
-![image](https://github.com/user-attachments/assets/d089a972-c585-4cfc-af4d-9c03337cb8e2)
+
+<img width="530" height="500" alt="image" src="https://github.com/user-attachments/assets/44580ec7-f744-452b-9059-b9e144ebc0a3" />
